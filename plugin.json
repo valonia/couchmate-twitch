@@ -1,7 +1,7 @@
 {
   "id": "twitch",
   "name": "Twitch",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A front page like twitch.tv: featured streams, popular streams in your language, top categories and a row per big category. Twitch categories and channels in search, live chat, and streams that play in sync for everyone.",
   "main": "index.mjs",
   "repository": "valonia/couchmate-twitch",

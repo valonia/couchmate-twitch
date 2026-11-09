@@ -333,7 +333,7 @@ export default function setup(api) {
     name: 'Twitch',
     icon: LOGO,
     // On the Favorites screen: favourite channels in a group of their own (live ones first).
-    favoriteGroups: { stream: { title: api.t('Twitch channels'), order: 35 } },
+    favoriteGroups: { stream: { title: api.t('Channels on Twitch'), order: 35 } },
 
     // The player: this plugin decides the keys and what is in the settings panel.
     player: {
