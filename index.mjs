@@ -5,7 +5,8 @@
 // - The live stream plays in sync for everyone, with the chat next to it.
 //
 // Data comes from Twitch's public web interface (the same way Streamlink and VLC do it),
-// so no Twitch account is needed. If Twitch changes something, the client ID can be changed in the settings.
+// so no Twitch account is needed. It uses the client ID of Twitch's own website – if Twitch stops accepting it,
+// the current one is read from twitch.tv by itself.
 
 const GQL = 'https://gql.twitch.tv/gql';
 const USHER = 'https://usher.ttvnw.net/api/channel/hls';
@@ -16,15 +17,38 @@ const LOGIN = /^[A-Za-z0-9_]{1,40}$/;
 
 export default function setup(api) {
   const open = new Set(); // open chats (stop functions)
-  const clientId = () => api.settings.clientId || DEFAULT_CLIENT;
+  let clientId = DEFAULT_CLIENT;
+  let learning = null;
+  let learnedAt = 0;
 
-  async function gql(query, variables = {}) {
+  /** Reads the client ID that twitch.tv uses right now from its page (at most every 10 minutes). */
+  function learnClientId() {
+    if (learning) return learning;
+    if (Date.now() - learnedAt < 10 * 60 * 1000) return Promise.resolve(clientId);
+    learning = (async () => {
+      const r = await fetch('https://www.twitch.tv/', { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(15000) });
+      const m = /clientId\s*=\s*"([a-z0-9]{20,40})"/i.exec(await r.text());
+      if (!m) throw new Error('could not find the client ID on twitch.tv');
+      learnedAt = Date.now();
+      if (m[1] !== clientId) { clientId = m[1]; api.log('Twitch has a new client ID – using it'); }
+      return clientId;
+    })().finally(() => { learning = null; });
+    return learning;
+  }
+
+  async function gql(query, variables = {}, retried = false) {
     const r = await fetch(GQL, {
       method: 'POST',
-      headers: { 'Client-ID': clientId(), 'Content-Type': 'application/json' },
+      headers: { 'Client-ID': clientId, 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, variables }),
       signal: AbortSignal.timeout(10000),
     });
+    // A refused client ID: fetch the current one from twitch.tv and try once more.
+    if ((r.status === 400 || r.status === 401) && !retried) {
+      const before = clientId;
+      await learnClientId().catch((e) => api.log(e.message));
+      if (clientId !== before) return gql(query, variables, true);
+    }
     if (!r.ok) throw new Error(`Twitch answered ${r.status}`);
     const d = await r.json();
     if (d.errors?.length) throw new Error(d.errors[0].message || 'Twitch returned an error');

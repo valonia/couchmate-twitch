@@ -1,7 +1,7 @@
 {
   "id": "twitch",
   "name": "Twitch",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A front page like twitch.tv: featured streams, popular streams in your language, top categories and a row per big category. Twitch categories and channels in search, live chat, and streams that play in sync for everyone.",
   "main": "index.mjs",
   "repository": "valonia/couchmate-twitch",
@@ -33,13 +33,6 @@
       "type": "number",
       "default": 3,
       "help": "A row of streams for each of the biggest categories, e.g. Just Chatting (0–6)."
-    },
-    {
-      "key": "clientId",
-      "label": "Client ID",
-      "type": "text",
-      "default": "kimne78kx3ncx6brgo4mv6wki5h1ko",
-      "help": "The client ID Twitch's website uses. Only change it if Twitch changes something."
     }
   ]
 }
