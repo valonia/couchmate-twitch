@@ -12,7 +12,8 @@ it on and fill in its settings.
 ## Updates
 
 The server checks this repository for new releases every 6 hours. Under **Plugins** you can update with one
-click, or switch on **Update automatically** to have new versions installed as soon as they are released.
+click, or switch on **Update automatically** to have new versions installed by themselves. They wait until
+nobody is watching.
 
 To release a new version: raise `version` in `plugin.json`, commit, and publish a GitHub release tagged
 `v<version>` (e.g. `v2.1.0`).
@@ -23,7 +24,6 @@ To release a new version: raise `version` in `plugin.json`, commit, and publish 
 - **Extra row for a language** – "auto" = the TV's language (no extra row for English), a language code such as "sv", or empty for no such row.
 - **Number of popular streams (6–30)**
 - **Rows for the biggest categories** – A row of streams for each of the biggest categories, e.g. Just Chatting (0–6).
-- **Client ID** – The client ID Twitch's website uses. Only change it if Twitch changes something.
 
 ## Making your own
 
